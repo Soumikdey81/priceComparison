@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
@@ -13,8 +14,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
 
 const Page = () => {
+  const router = useRouter(); // ✅ initialize router
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,15 +35,37 @@ const Page = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate login
-    setTimeout(() => {
-      toast.success("Login successful!");
+    try {
+      const { email, password } = formData;
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Login successful!");
+        setFormData({
+          email: "",
+          password: "",
+          rememberMe: false,
+        });
+
+        // ✅ Redirect to home page
+        router.push("/");
+      }
+    } catch (err) {
+      toast.error("Unexpected error occurred");
+      console.error(err);
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   return (

@@ -12,12 +12,11 @@ import { Product } from "@/types/product";
 import { ArrowUp, ArrowDown } from "lucide-react";
 
 interface ProductResultsProps {
-  products: any[]; // raw scraped items (not yet typed)
+  products: any[];
 }
 
 type SortOption = "price-asc" | "price-desc" | "rating-desc" | "site";
 
-/** 🔍 Detect the e‑commerce site from a URL */
 const detectSite = (url: string | undefined): string => {
   if (!url) return "unknown";
   const host = (() => {
@@ -27,15 +26,13 @@ const detectSite = (url: string | undefined): string => {
       return url.toLowerCase();
     }
   })();
+
   if (host.includes("amazon")) return "amazon";
-  if (host.includes("ebay")) return "ebay";
-  if (host.includes("walmart")) return "walmart";
-  if (host.includes("bestbuy")) return "bestbuy";
-  if (host.includes("target")) return "target";
+  if (host.includes("flipkart")) return "flipkart";
+  if (host.includes("jiomart")) return "jiomart";
   return "unknown";
 };
 
-/** 🔧 Map whatever fields the scraper gives us to our internal Product shape */
 const normalise = (raw: any): Product => {
   const url = raw.url || raw.link || "#";
   return {
@@ -79,6 +76,7 @@ const ProductResults = ({ products }: ProductResultsProps) => {
   };
 
   const sorted = useMemo(() => [...items].sort(sortFn), [items, sortBy]);
+
   const filtered = useMemo(
     () =>
       filteredSite === "all"
@@ -86,6 +84,7 @@ const ProductResults = ({ products }: ProductResultsProps) => {
         : sorted.filter((p) => p.site === filteredSite),
     [sorted, filteredSite]
   );
+
   const uniqueSites = useMemo(
     () => [...new Set(items.map((p) => p.site))],
     [items]
@@ -99,10 +98,8 @@ const ProductResults = ({ products }: ProductResultsProps) => {
   const badgeStyle = (site?: string) => {
     const styles: Record<string, string> = {
       amazon: "bg-orange-100 text-orange-700 border-orange-200",
-      ebay: "bg-blue-100 text-blue-700 border-blue-200",
-      walmart: "bg-blue-100 text-blue-700 border-blue-200",
-      bestbuy: "bg-yellow-100 text-yellow-700 border-yellow-200",
-      target: "bg-red-100 text-red-700 border-red-200",
+      flipkart: "bg-blue-100 text-blue-700 border-blue-200",
+      jiomart: "bg-sky-100 text-sky-700 border-sky-200",
     };
     return styles[site ?? ""] ?? "bg-gray-100 text-gray-700 border-gray-200";
   };
@@ -110,10 +107,8 @@ const ProductResults = ({ products }: ProductResultsProps) => {
   const badgeEmoji = (site?: string) => {
     const map: Record<string, string> = {
       amazon: "🛒",
-      ebay: "🏪",
-      walmart: "🏬",
-      bestbuy: "💻",
-      target: "🎯",
+      flipkart: "📦",
+      jiomart: "🧃",
     };
     return map[site ?? ""] ?? "📦";
   };
@@ -149,9 +144,7 @@ const ProductResults = ({ products }: ProductResultsProps) => {
                 <SelectItem value="price-desc">
                   <ArrowDown size={16} /> Price: High to Low
                 </SelectItem>
-                <SelectItem value="rating-desc">
-                  ⭐ Rating: High to Low
-                </SelectItem>
+                <SelectItem value="rating-desc">⭐ Rating</SelectItem>
                 <SelectItem value="site">🏪 Site Name</SelectItem>
               </SelectContent>
             </Select>

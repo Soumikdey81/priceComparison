@@ -14,10 +14,8 @@ const LoadingSpinner = ({ query, selectedSites }: LoadingSpinnerProps) => {
   const siteNames: Record<string, string> = {
     amazon: "Amazon",
     flipkart: "Flipkart",
-    ebay: "eBay",
-    walmart: "Walmart",
-    bestbuy: "Best Buy",
-    target: "Target",
+    jiomart: "JioMart",
+    croma: "Croma",
   };
 
   useEffect(() => {
@@ -74,12 +72,12 @@ const LoadingSpinner = ({ query, selectedSites }: LoadingSpinnerProps) => {
         </div>
 
         {/* Progress Bar */}
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Progress value={progress} className="h-3" />
           <p className="text-sm text-gray-500">
             {Math.round(progress)}% complete
           </p>
-        </div>
+        </div> */}
 
         {/* Current Site */}
         {currentSite < selectedSites.length && (

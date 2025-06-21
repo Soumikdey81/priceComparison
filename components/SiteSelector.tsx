@@ -28,28 +28,10 @@ const sites: Site[] = [
     color: "from-blue-500 to-indigo-500",
   },
   {
-    id: "myntra",
-    name: "Myntra",
-    logo: "👗",
-    color: "from-pink-500 to-red-500",
-  },
-  {
-    id: "ajio",
-    name: "Ajio",
-    logo: "🧥",
-    color: "from-gray-700 to-blue-500",
-  },
-  {
-    id: "nykaa",
-    name: "Nykaa",
-    logo: "💄",
-    color: "from-pink-600 to-purple-500",
-  },
-  {
-    id: "meesho",
-    name: "Meesho",
-    logo: "🎁",
-    color: "from-fuchsia-500 to-pink-500",
+    id: "jiomart",
+    name: "JioMart",
+    logo: "🧃",
+    color: "from-sky-600 to-blue-400",
   },
 ];
 

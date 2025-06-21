@@ -1,5 +1,8 @@
-// components/ProductSearch.tsx
+"use client";
+
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -16,9 +19,21 @@ const ProductSearch = ({ isLoading, onSearch }: Props) => {
   const [textQuery, setTextQuery] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      // User not logged in, redirect to login page
+      router.push("/login");
+      return;
+    }
+
     if (searchType === "text" && textQuery.trim()) {
       onSearch(textQuery.trim(), "text");
     } else if (searchType === "image" && selectedFile) {
@@ -31,31 +46,9 @@ const ProductSearch = ({ isLoading, onSearch }: Props) => {
       <div className="space-y-6">
         {/* Toggle */}
         <div className="flex justify-center">
-          <div className="flex bg-gray-100 rounded-lg p-1">
-            <button
-              type="button"
-              onClick={() => setSearchType("text")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
-                searchType === "text"
-                  ? "bg-white shadow-md text-blue-600"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <Search size={18} />
-              Text Search
-            </button>
-            <button
-              type="button"
-              onClick={() => setSearchType("image")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
-                searchType === "image"
-                  ? "bg-white shadow-md text-blue-600"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <Image size={18} />
-              Image Search
-            </button>
+          {/* Removed toggle buttons for simplicity */}
+          <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium shadow-sm">
+            Search for a product
           </div>
         </div>
 
@@ -63,12 +56,6 @@ const ProductSearch = ({ isLoading, onSearch }: Props) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {searchType === "text" ? (
             <>
-              <label
-                htmlFor="search"
-                className="text-sm font-medium text-gray-700"
-              >
-                Search for a product
-              </label>
               <div className="relative">
                 <Input
                   id="search"
@@ -77,6 +64,7 @@ const ProductSearch = ({ isLoading, onSearch }: Props) => {
                   placeholder="e.g., iPhone 15 Pro, Samsung Galaxy S24…"
                   className="h-12 pr-12 text-lg"
                   disabled={isLoading}
+                  autoComplete="off"
                 />
                 <Search
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"

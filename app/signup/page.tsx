@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { z } from "zod";
+import { supabase } from "@/lib/supabaseClient";
 
 const signupSchema = z
   .object({
@@ -49,7 +50,6 @@ const Page = () => {
       [name]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -58,21 +58,35 @@ const Page = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form
     try {
       signupSchema.parse(formData);
       setErrors({});
       setIsSubmitting(true);
 
-      // Simulate signup process
-      setTimeout(() => {
-        toast.success("Account created successfully! You can now log in.");
-        setIsSubmitting(false);
-        // In a real app, you would redirect to login page here
-      }, 1500);
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name,
+          },
+        },
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Account created! Check your email to verify.");
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
@@ -82,7 +96,12 @@ const Page = () => {
           }
         });
         setErrors(fieldErrors);
+      } else {
+        toast.error("Unexpected error occurred");
+        console.error(error);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -164,7 +183,7 @@ const Page = () => {
                   type="password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Enter your confirm password"
+                  placeholder="Confirm your password"
                   required
                 />
                 {errors.confirmPassword && (

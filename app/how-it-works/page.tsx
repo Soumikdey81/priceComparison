@@ -32,9 +32,7 @@ const Page = () => {
                   </h3>
                   <p className="text-gray-600">
                     Enter the name of the product you're looking for in the
-                    search bar, or upload an image of the product. Our advanced
-                    image recognition technology will identify the product for
-                    you.
+                    search bar.
                   </p>
                 </div>
               </CardContent>
